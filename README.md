@@ -43,3 +43,75 @@ Spring Boot API Project Seed 是一个基于Spring Boot & MyBatis的种子项目
 
 ## License
 无，纯粹开源分享，感谢大家 [Star](https://github.com/lihengming/spring-boot-api-project-seed/stargazers) & [Fork](https://github.com/lihengming/spring-boot-api-project-seed/network/members) 的支持。
+
+
+## Benjamin 补充
+使用说明：
+0. 在数据库中建立全部的数据表
+1. 修改core\ProjectConstant.java中的项目基础包名称BASE_PACKAGE
+2. 设置resources/application.properties中的spring.profiles.active值，并完成相关环境application-*.properties文件中的配置
+3. 若环境为非dev环境，系统要求进行签名验证，相关的逻辑和加密密码在configurer\WebMvcConfigurer.java的validateSign方法中。此时所有的URL需要加&sign=MD5Value. Sign的算法为RequestParam集合去掉Sign参数后排序输出为String,再加上密码，其结果再MD5加密。
+4. 针对test/java/CodeGenerator.java文件，修改以下部分：
+（1）完成JDBC相关配置，并在main方法中加入gencode方法实现。
+（2）在genModelAndMapper方法中修改数据库Dialect定义。（暂时没有测试这个在SQL Server的设置）
+（3）在genController方法中根据需要设定相关的模板，针对restfulAPI, 选择controller-restful.ftl作为输出格式模板。
+5. 执行test/java/CodeGenerator.java文件的main方法，生成代码。
+6. 编译执行。
+
+
+==================list示例：==================  
+
+1. 列出全部记录
+- URL: http://localhost:8080/user/list
+- Header: Content-Type: application/json
+- Body:{} (只打两个大括号即可)  
+
+2. 分页显示记录
+- URL: http://localhost:8080/user/list?page=4&size=2
+- Header: Content-Type: application/json
+- Body:{} (只打两个大括号即可)  
+
+==================Add示例：=================  
+
+- URL: http://localhost:8080/user/add
+- Header: Content-Type: application/json
+- BODY:
+```json
+{
+    "id":0,
+    "username": "BeJson@qq.com",
+    "password": "1ee04e0b1cb5af7367c80c22e42efd8b",
+    "nickName": "BeJson",
+    "sex":1,
+    "registerDate":"2017-06-23 14:24:23"
+}
+```
+
+
+==================Delete 示例：==================  
+
+- URL: http://localhost:8080/user/delete?id=13
+- Header: Content-Type: application/json
+- Body:{} (只打两个大括号即可)
+
+
+==================Update 示例：=================  
+
+- URL: http://localhost:8080/user/update
+- Header: Content-Type: application/json
+```json
+{
+    "id":12,
+    "username": "Benjamin@qq.com",
+    "password": "1ee04e0b1cb5af7367c80c22e42efd8b",
+    "nickName": "Benjamin",
+    "sex":1,
+    "registerDate":"2017-06-23 14:24:35"
+}
+```
+
+==================Detail 示例：=================  
+
+- URL: http://localhost:8080/user/detail?id=12
+- Header: Content-Type: application/json
+- Body:{} (只打两个大括号即可)

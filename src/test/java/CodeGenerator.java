@@ -18,9 +18,9 @@ import static com.company.project.core.ProjectConstant.*;
  */
 public class CodeGenerator {
     //JDBC配置，请修改为你项目的实际配置
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/test";
+    private static final String JDBC_URL = "jdbc:mysql://geqadevdb8001:3306/springbootseed";
     private static final String JDBC_USERNAME = "root";
-    private static final String JDBC_PASSWORD = "123456";
+    private static final String JDBC_PASSWORD = "Password1!";
     private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 
     private static final String PROJECT_PATH = System.getProperty("user.dir");//项目在硬盘上的基础路径
@@ -37,13 +37,14 @@ public class CodeGenerator {
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
     public static void main(String[] args) {
-        genCode("输入表名");
+        genCode("user");
         //genCode("输入表名","输入自定义Model名称");
     }
 
     /**
      * 通过数据表名称生成代码，Model 名称通过解析数据表名称获得，下划线转大驼峰的形式。
      * 如输入表名称 "t_user_detail" 将生成 TUserDetail、TUserDetailMapper、TUserDetailService ...
+     *
      * @param tableNames 数据表名称...
      */
     public static void genCode(String... tableNames) {
@@ -55,6 +56,7 @@ public class CodeGenerator {
     /**
      * 通过数据表名称，和自定义的 Model 名称生成代码
      * 如输入表名称 "t_user_detail" 和自定义的 Model 名称 "User" 将生成 User、UserMapper、UserService ...
+     *
      * @param tableName 数据表名称
      * @param modelName 自定义的 Model 名称
      */
@@ -103,6 +105,8 @@ public class CodeGenerator {
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(tableName);
         tableConfiguration.setDomainObjectName(modelName);
+
+        // 若数据库为SqlServer， 则GeneratedKey建构式的第二个参数为SqlServer， 其取值可参考GeneratedKey建构函数中的DatabaseDialects.getDatabaseDialect方法实现
         tableConfiguration.setGeneratedKey(new GeneratedKey("id", "Mysql", true, null));
         context.addTableConfiguration(tableConfiguration);
 
@@ -147,16 +151,14 @@ public class CodeGenerator {
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
-            cfg.getTemplate("service.ftl").process(data,
-                    new FileWriter(file));
+            cfg.getTemplate("service.ftl").process(data, new FileWriter(file));
             System.out.println(modelNameUpperCamel + "Service.java 生成成功");
 
             File file1 = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_SERVICE_IMPL + modelNameUpperCamel + "ServiceImpl.java");
             if (!file1.getParentFile().exists()) {
                 file1.getParentFile().mkdirs();
             }
-            cfg.getTemplate("service-impl.ftl").process(data,
-                    new FileWriter(file1));
+            cfg.getTemplate("service-impl.ftl").process(data, new FileWriter(file1));
             System.out.println(modelNameUpperCamel + "ServiceImpl.java 生成成功");
         } catch (Exception e) {
             throw new RuntimeException("生成Service失败", e);
@@ -180,8 +182,10 @@ public class CodeGenerator {
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
-            //cfg.getTemplate("controller-restful.ftl").process(data, new FileWriter(file));
-            cfg.getTemplate("controller.ftl").process(data, new FileWriter(file));
+
+            //TODO: Benjamin, 20171218, 请注意此处生成的Controller是区分restful 和非restful的。区别是对Post的对象接收上有@RequestBody指示。
+            cfg.getTemplate("controller-restful.ftl").process(data, new FileWriter(file));
+            //cfg.getTemplate("controller.ftl").process(data, new FileWriter(file));
 
             System.out.println(modelNameUpperCamel + "Controller.java 生成成功");
         } catch (Exception e) {
