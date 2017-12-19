@@ -182,11 +182,7 @@ public class CodeGenerator {
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
-
-            //TODO: Benjamin, 20171218, 请注意此处生成的Controller是区分restful 和非restful的。区别是对Post的对象接收上有@RequestBody指示。
             cfg.getTemplate("controller-restful.ftl").process(data, new FileWriter(file));
-            //cfg.getTemplate("controller.ftl").process(data, new FileWriter(file));
-
             System.out.println(modelNameUpperCamel + "Controller.java 生成成功");
         } catch (Exception e) {
             throw new RuntimeException("生成Controller失败", e);
